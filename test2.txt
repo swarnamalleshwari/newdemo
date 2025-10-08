@@ -1,0 +1,33 @@
+import pandas as pd
+
+# Step 1: Read the file
+with open("prn_input.txt", "r") as file:
+    lines = file.readlines()
+
+# Step 2: Find the header line (starts with ALT. and contains ISAFLEX)
+for line in lines:
+    if line.strip().startswith("ALT.") and "ISAFLEX" in line:
+        header_line = line.strip()
+        break
+
+# Step 3: Get column names (skip units like (KT), (KG), etc.)
+columns = header_line.split()
+cleaned_columns = []
+for col in columns:
+    if "(" not in col:  # skip unit columns.
+        cleaned_columns.append(col)
+
+# Step 4: Collect data rows (same number of values as columns)
+data_rows = []
+for line in lines:
+    values = line.strip().split()
+    if len(values) == len(cleaned_columns) and not line.strip().startswith("ALT."):
+        data_rows.append(values)
+
+# Step 5: Create a DataFrame
+df = pd.DataFrame(data_rows, columns=cleaned_columns)
+
+# Step 6: Show results
+print("Number of data rows:", len(df))
+print("Number of columns:", len(df.columns))
+print(df)  # show first few rows
